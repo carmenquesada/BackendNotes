@@ -1,3 +1,45 @@
+Aqui añadimos las funciones
+EJEMPLOS
+
+const updateEconomicRestaurants = async function (RestaurantId) {
+	const AvgPriceOtherRestaurants = Product.findAll({
+		where: { restaurantId: { [Sequelize.Op.ne]: RestaurantId }},
+		attributes: [
+		[Sequelize.fn('AVG', Sequelize.col('price')), 'avgPrice']
+		]
+})
+
+const AvgPriceMyRestaurant = Product.findOne({
+	where: {restaurantId: RestaurantId},
+	attributes: [
+	[Sequelize.fn('AVG', Sequelize.col('price')), 'avgPrice']
+	]
+})
+
+const restaurant = await Restaurant.findByPk(RestaurantId)
+	if (AvgPriceMyRestaurant !== null && AvgPriceOtherRestaurants !==
+	null) {
+	const finalValue = AvgPriceMyRestaurant.avgPrice <
+	AvgPriceOtherRestaurants.avgPrice
+	restaurant.economic = finalValue
+}
+await restaurant.save()
+}
+
+const pinnedRestaurant = async function (req, res) {
+  try {
+    const restaurantToBeToggled = await Restaurant.findByPk(req.params)
+    if (restaurantToBeToggled.pinnedAt) {
+      restaurantToBeToggled.pinnedAt = null
+    } else {
+      restaurantToBeToggled.pinnedAt = new Date()
+    }
+    await restaurantToBeToggled.save()
+    res.json(restaurantToBeToggled)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
 
 // CONTROLLERS
 const newOrder = Order.build(req.body) -> Se construye un objeto Order con los datos enviados (req.body) pero aun no se guarda en la base de datos
@@ -17,20 +59,7 @@ order: [[‘createdAt’, ‘DESC’]] -> Orden en función de fecha de creació
 )
 
 
-const pinnedRestaurant = async function (req, res) {
-  try {
-    const restaurantToBeToggled = await Restaurant.findByPk(req.params)
-    if (restaurantToBeToggled.pinnedAt) {
-      restaurantToBeToggled.pinnedAt = null
-    } else {
-      restaurantToBeToggled.pinnedAt = new Date()
-    }
-    await restaurantToBeToggled.save()
-    res.json(restaurantToBeToggled)
-  } catch (err) {
-    res.status(500).send(err)
-  }
-}
+
 
 // CREATE
 const create = async function (req, res) {
