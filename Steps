@@ -7,3 +7,7 @@ Pasos a seguir:
 6. VALIDATION
 7. npm run test:backend
 8. DEBUG
+
+1. Añadir la/s propiedad/es en migrations y en model
+2. En controller modificar/crear las funciones
+3. En routes añadir las rutas
