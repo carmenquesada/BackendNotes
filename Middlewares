@@ -1,0 +1,25 @@
+const restaurantHasNoOrders = async (req, res, next) => {
+  try {
+    const numberOfRestaurantOrders = await Order.count({ // Contar cuantos registros en la tabla Order tienen el restaurantId especificado
+      where: { restaurantId: req.params.restaurantId }
+    })
+    if (numberOfRestaurantOrders === 0) { // Si el restaurante no tiene pedidos
+      return next() // Continuar con la siguiente función
+    } else { // Si tiene pedidos
+    return res.status(409).send('Some orders belong to this restaurant.') // Lanza error
+  } catch (err) {
+    return res.status(500).send(err.message)
+  }
+}
+
+const checkRestaurantOwnership = async (req, res, next) => {
+  try {
+    const restaurant = await Restaurant.findByPk(req.params.restaurantId) // Busca en la base de datos un restaurante con el restaurantId proporcionado en la solicitud
+    if (req.user.id === restaurant.userId) { // Compara el id del usuario autenticado con el userId del restaurante recuperado de la base de datos
+      return next() // Si el usuario es el propietario, llama a next() para que se ejecute el siguiente middleware
+    } else { // Si el usuario no es el propietario
+    return res.status(403).send('Not enough privileges. This entity does not belong to you')
+  } catch (err) {
+    return res.status(500).send(err)
+  }
+}
