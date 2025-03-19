@@ -1,0 +1,54 @@
+const checkRestaurantIdInBody = async(value, {req}) =>{
+    try {
+        const restaurantId = req.body.restaurantId  -> Obtiene el restaurante
+        if (!restaurantId) {
+          throw new Error('The restaurantId is not present in the request body.')
+        }
+        const restaurant = await Restaurant.findByPk(restaurantId)  -> Lo busca en la base
+        if (!restaurant) {
+          throw new Error('The restaurantId does not correspond to an existing restaurant.')
+        }
+      } catch (err) {
+        throw new Error(err.message)
+      }
+    }
+
+const checkProductsAvailable = async(value, {req}) =>{
+    try {
+        for (const product of value) {  -> Recorre los productos recibidos (value es la lista de productos)
+          const prod = await Product.findByPk(product.productId)
+          if (prod.availability < 1) {
+            throw new Error('The availability of each product has to be greater than 0 ')
+          }
+        }
+      } catch (err) {
+        throw new Error(err.message)
+      }
+    }
+
+const checkProductNotEmpty = async (value, { req }) => {
+  try {
+    if (req.body.products.length < 1) {
+      throw new Error('The array of product is empty')
+    }
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+const allBelongToSame = async (value, { req }) => {
+  try {
+    const orderRestaurantId = req.body.restaurantId
+    for (const product of value) {
+      const prod = await Product.findByPk(product.productId)
+      if (prod.restaurantId !== orderRestaurantId) {
+        throw new Error('Restaurant dont belong to same')
+      }
+    }
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+
+
