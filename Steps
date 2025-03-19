@@ -8,7 +8,8 @@ Pasos a seguir:
 7. npm run test:backend
 8. DEBUG
 
-1. Añadir la/s propiedad/es en migrations y en model
-2. En controller modificar/crear las funciones
-3. En validation añadir el check
-4. En routes añadir las rutas
+1. Ejecutar el test para ver qué nos piden
+2. Añadir la/s propiedad/es en migrations y en model
+3. En controller modificar/crear las funciones
+4. En validation añadir el check
+5. En routes añadir las rutas
