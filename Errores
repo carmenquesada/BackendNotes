@@ -92,3 +92,5 @@ Ejecuto el test
 
 Los siguientes errores estan en el create y edit product, al ser errores 422 sabemos que son
 de los Validations
+
+
