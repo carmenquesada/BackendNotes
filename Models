@@ -1,0 +1,15 @@
+Aqui ponemos tambien la nueva propiedad
+EJEMPLOS
+
+promoted: DataTypes.BOOLEAN
+
+economic: {
+type: DataTypes.BOOLEAN,
+defaultValue: false
+},
+
+pinnedAt: {
+allowNull: true,
+type: DataTypes.DATE
+},
+
