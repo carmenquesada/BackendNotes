@@ -31,3 +31,29 @@ const pinnedRestaurant = async function (req, res) {
     res.status(500).send(err)
   }
 }
+
+// UPDATE
+const update = async function (req, res) {
+  try {
+    await Restaurant.update(req.body, { where: { id: req.params.restaurantId } })
+    const updatedRestaurant = await Restaurant.findByPk(req.params.restaurantId)
+    res.json(updatedRestaurant)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
+// DELETE
+const destroy = async function (req, res) {
+  try {
+    const result = await Order.destroy({ where: { id: req.params.orderId } })
+    let message = ''
+    if (result === 1) {
+      message = 'Succesfully delated order' + req.params.orderId
+    } else {
+      message = 'Could not delate order'
+    } res.json(message)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+
