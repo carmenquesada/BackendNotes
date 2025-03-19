@@ -20,7 +20,7 @@ checkEntityExists(Restaurant, 'restaurantId'), // Should return
 RestaurantMiddleware.checkRestaurantOwnership,
 )
 
-// RestaurantMiddleware
+// RestaurantController
 const togglePinned = async function (req, res) {
 try {
 const restaurant = await Restaurant.findByPk(req.params.restaurantId)
@@ -34,4 +34,23 @@ res.json(updatedRestaurant)
 } catch (err) {
 res.status(500).send(err)
 }
+}
+
+const indexOwner = async function (req, res) {
+  try {
+    const restaurants = await Restaurant.findAll(
+      {
+        attributes: { exclude: ['userId'] },
+        where: { userId: req.user.id },
+        include: [{
+          model: RestaurantCategory,
+          as: 'restaurantCategory'
+        }],
+        // This is what we have to add to order by descent order:
+        order: [['pinnedAt', 'DESC']]
+      })
+    res.json(restaurants)
+  } catch (err) {
+    res.status(500).send(err)
+  }
 }
