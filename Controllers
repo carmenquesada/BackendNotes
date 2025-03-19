@@ -1,0 +1,33 @@
+
+// CONTROLLERS
+const newOrder = Order.build(req.body) -> Se construye un objeto Order con los datos enviados (req.body) pero aun no se guarda en la base de datos
+
+const restaurant = await Restaurant.findByPk(req.body.restaurantId) -> Se busca el restaurant relacionado con la orden usando su id
+
+const orders = await Order.findAl(     -> Se busca todas las ordenes en la base de datos
+	{
+	where: { userId: req.user.id }    -> Se filtran por userId
+	include: [
+{
+	model: Product,
+	as: ‘products’    -> Incluye información de los productos
+}],
+order: [[‘createdAt’, ‘DESC’]] -> Orden en función de fecha de creación y descendente 
+}
+)
+
+
+const pinnedRestaurant = async function (req, res) {
+  try {
+    const restaurantToBeToggled = await Restaurant.findByPk(req.params)
+    if (restaurantToBeToggled.pinnedAt) {
+      restaurantToBeToggled.pinnedAt = null
+    } else {
+      restaurantToBeToggled.pinnedAt = new Date()
+    }
+    await restaurantToBeToggled.save()
+    res.json(restaurantToBeToggled)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
