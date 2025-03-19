@@ -1,3 +1,4 @@
+// 1. Check that restaurantId is present in the body and corresponds to an existing restaurant
 const checkRestaurantIdInBody = async(value, {req}) =>{
     try {
         const restaurantId = req.body.restaurantId  -> Obtiene el restaurante
@@ -13,6 +14,7 @@ const checkRestaurantIdInBody = async(value, {req}) =>{
       }
     }
 
+// 3. Check that products are available
 const checkProductsAvailable = async(value, {req}) =>{
     try {
         for (const product of value) {  -> Recorre los productos recibidos (value es la lista de productos)
@@ -26,21 +28,36 @@ const checkProductsAvailable = async(value, {req}) =>{
       }
     }
 
+// 2. Check that products is a non-empty array composed of objects with productId and quantity greater than 0
 const checkProductNotEmpty = async (value, { req }) => {
   try {
-    if (req.body.products.length < 1) {
-      throw new Error('The array of product is empty')
+    if (req.body.products.length < 1) { // Se verifica si products es un array vacio
+      throw new Error('The array of products is empty.')
     }
   } catch (err) {
     throw new Error(err.message)
   }
 }
 
+const checkProductsId = async (value, { req }) => {
+  try {
+    for (const product of value) { // Se recorre el array value 
+      const prod = await Product.findByPk(product.productId) // Se busca en la base de datos el producto con el productId correspondiente
+      if (prod.productId < 1) { // Si el productId del producto encontrado es menos que 1
+        throw new Error('The id of each product has to be greater than 0 ')
+      }
+    }
+  } catch (err) {
+    throw new Error(err.message)
+  }
+}
+
+// 4. Check that all the products belong to the same restaurant
 const allBelongToSame = async (value, { req }) => {
   try {
-    const orderRestaurantId = req.body.restaurantId
-    for (const product of value) {
-      const prod = await Product.findByPk(product.productId)
+    const orderRestaurantId = req.body.restaurantId // Se extrae restaurantId de la solicitud
+    for (const product of value) { // Se recorre value
+      const prod = await Product.findByPk(product.productId) // Se busca en la base de datos el product con productId correspondiente
       if (prod.restaurantId !== orderRestaurantId) {
         throw new Error('Restaurant dont belong to same')
       }
@@ -49,6 +66,17 @@ const allBelongToSame = async (value, { req }) => {
     throw new Error(err.message)
   }
 }
+
+const create = [
+  check('address').exists().isString().isLength({ min: 1, max: 255 }).trim(),
+  check('restaurantId').exists().isInt({ min: 1 }).toInt(),
+  check('products.*.quantity').isInt({ min: 1 }).toInt(),
+  check('restaurantId').custom(checkRestaurantIdInBody),
+  check('products').custom(checkProductNotEmpty),
+  check('products').custom(checkProductsId),
+  check('products').custom(checkProductsAvailable),
+  check('products').custom(allBelongToSame)
+]
 
 
 
