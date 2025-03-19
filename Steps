@@ -10,4 +10,5 @@ Pasos a seguir:
 
 1. Añadir la/s propiedad/es en migrations y en model
 2. En controller modificar/crear las funciones
-3. En routes añadir las rutas
+3. En validation añadir el check
+4. En routes añadir las rutas
