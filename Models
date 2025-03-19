@@ -1,6 +1,8 @@
 Aqui ponemos tambien la nueva propiedad
 EJEMPLOS
 
+isHighlight: DataTypes.BOOLEAN
+
 promoted: DataTypes.BOOLEAN
 
 economic: {
