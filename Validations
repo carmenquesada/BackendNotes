@@ -1,4 +1,22 @@
 Aqui añadimos los checks de la nueva propiedad creada
+Creamos las funciones y las añadimos al create y update 
+Creo la funcion
+const checkOnly5HighlightedProducts = async (value, { req }) => {
+try {
+const products = Product.count({ where: { restaurantId:
+req.body.restaurantId, isHighlight: true } })
+if (products >= 5) {
+return Promise.reject(new Error('Maximum number of highlighted
+products is 5.'))
+} else {
+return Promise.resolve('OK')
+}
+} catch (err) {
+return Promise.reject(new Error(err))
+}
+}
+
+Y añado aqui la funcion
 const create = [
   check('name').exists().isString().isLength({ min: 1, max: 255 }).trim(),
   check('description').optional({ nullable: true, checkFalsy: true }).isString().trim(),
