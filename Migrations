@@ -1,0 +1,21 @@
+Aqui añadimos las propiedades nuevas
+EJEMPLOS
+
+isHighlight: {
+type: Sequelize.BOOLEAN
+}
+
+promoted: {
+type: Sequelize.BOOLEAN,
+defaultValue: false
+}
+
+economic: {
+type: Sequelize.BOOLEAN,
+defaultValue: false
+},
+
+pinnedAt: {
+allowNull: true,
+type: Sequelize.DATE
+},
