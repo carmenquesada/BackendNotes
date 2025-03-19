@@ -106,5 +106,25 @@ const create = [
   check('products').custom(allBelongToSame)
 ]
 
+const noMoreThan1000Calories = async (grasas, proteinas, carbohidratos)
+=> {
+if (parseFloat(grasas) * 9 + parseFloat(proteinas) * 4 +
+parseFloat(carbohidratos) * 4 > 1000.0) {
+return Promise.reject(new Error('The sum of 1000 calories cannot
+exceed 1000.'))
+} else {
+return Promise.resolve()
+}
+}
+
+const check100grams = async (grasas, proteinas, carbohidratos) => {
+if (parseFloat(grasas) + parseFloat(proteinas) +
+parseFloat(carbohidratos) !== 100.0) {
+return Promise.reject(new Error('The sum of 100 grams cannot exceed
+100.'))
+} else {
+return Promise.resolve()
+}
+
 
 
