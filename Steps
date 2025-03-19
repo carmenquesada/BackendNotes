@@ -1,0 +1,9 @@
+Pasos a seguir:
+1. Change ROUTES
+2. MIGRATIONS
+3. npm run migrate:backend
+4. MODEL
+5. CONTROLLER
+6. VALIDATION
+7. npm run test:backend
+8. DEBUG
