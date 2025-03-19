@@ -1,0 +1,94 @@
+Primero que todo hago los test
+Busco el primer test que da error
+Vemos dónde está el error:
+
+it('Not visible products should not be listed', async () => {
+const notVisibleProduct = await
+getNewPaellaProductData(restaurant)
+const visibleDate = new Date()
+visibleDate.setDate(visibleDate.getDate() - 1)
+notVisibleProduct.visibleUntil = visibleDate
+let newProduct = Product.build(notVisibleProduct)
+newProduct = await newProduct.save()
+const responseRestaurant = await
+request(app).get(`/restaurants/${restaurant.id}`).send()
+expect(responseRestaurant.status).toBe(200)
+expect(responseRestaurant.body.products.every(product =>
+product.id !== newProduct.id)).toBe(true)
+})
+
+El error está en su ruta: .get(`/restaurants/${restaurant.id}
+
+Me voy a esa ruta
+app.route('/restaurants/:restaurantId')
+.get(
+checkEntityExists(Restaurant, 'restaurantId'),
+RestaurantController.show)
+
+Tendremos que cambiar algo de la función show del controlador, para que los productos que
+no sean visible no se muestren.
+
+Me voy al Controller
+
+const show = async function (req, res) {
+// Only returns PUBLIC information of restaurants
+try {
+const restaurant = await
+Restaurant.findByPk(req.params.restaurantId, {
+attributes: { exclude: ['userId'] },
+include: [{
+model: Product,
+as: 'products',
+include: { model: ProductCategory, as: 'productCategory' }
+},
+{
+model: RestaurantCategory,
+as: 'restaurantCategory'
+}],
+order: [[{ model: Product, as: 'products' }, 'order', 'ASC']]
+}
+)
+res.json(restaurant)
+} catch (err) {
+res.status(500).send(err)
+}
+}
+
+Tendremos que filtrar (where) para que muestre solo restaurantes con la propiedad
+visibleUntil:
+
+const show = async function (req, res) {
+// Only returns PUBLIC information of restaurants
+try {
+const restaurant = await
+Restaurant.findByPk(req.params.restaurantId, {
+attributes: { exclude: ['userId'] },
+include: [{
+model: Product,
+as: 'products',
+where: {
+// visibleUntil = null OR visibleUntil > fecha actual
+visibleUntil: { [Sequelize.Op.or]: [
+{ [Sequelize.Op.eq]: null },
+{ [Sequelize.Op.gt]: new Date() }]
+}
+},
+include: { model: ProductCategory, as: 'productCategory' }
+},
+{
+model: RestaurantCategory,
+as: 'restaurantCategory'
+}],
+order: [[{ model: Product, as: 'products' }, 'order', 'ASC']]
+}
+)
+res.json(restaurant)
+} catch (err) {
+res.status(500).send(err)
+}
+}
+
+Ejecuto el test
+
+Los siguientes errores estan en el create y edit product, al ser errores 422 sabemos que son
+de los Validations
