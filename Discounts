@@ -1,0 +1,43 @@
+RestaurantModel
+percentage: {
+type: DataTypes.DOUBLE,
+defaultValue: 0.0
+},
+
+ProductModel
+basePrice: DataTypes.DOUBLE
+
+createRestaurant en migrations
+percentage: {
+type: Sequelize.DOUBLE,
+defaultValue: 0.0
+}
+
+RestaurantValidation en update
+check('percentage').exists().isFloat({ min: -5, max: 5 }).toFloat(
+
+
+RestaurantController
+const update = async function (req, res) {
+try {
+// Solution: not explicitly requested, but the use of a transaction
+is valued
+const t= await sequelizeSession.transaction()
+await Restaurant.update(req.body, { where: { id:
+req.params.restaurantId } }, transaction)
+const productsToBeUpdated = await Product.findAll({
+where: {restaurantId: req.params.restaurantId }
+})
+for (const product of productsToBeUpdated) {
+const newPrice = product.basePrice + product.basePrice *
+(req.body.percentage / 100)
+await product.update({ price: newPrice }, {transaction: t})
+}
+await t.commit()
+const updatedRestaurant = await
+Restaurant.findByPk(req.params.restaurantId)
+res.json(updatedRestaurant)
+} catch (err) {
+res.status(500).send(err)
+}
+}
