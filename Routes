@@ -1,0 +1,14 @@
+  app.route('/restaurants/:restaurantId')
+    .get(RestaurantController.show)
+    .put(
+      isLoggedIn,
+      hasRole('owner'),
+      checkEntityExists(Restaurant, 'restaurantId'),
+      RestaurantValidation.update,
+      handleValidation,   // SOLO para POST y PUT
+      RestaurantController.update)
+    .delete(
+      isLoggedIn,
+      hasRole('owner'),
+      checkEntityExists(Restaurant, 'restaurantId'),
+      RestaurantController.destroy)
