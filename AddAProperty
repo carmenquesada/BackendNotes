@@ -1,6 +1,5 @@
 Añadir una propiedad:
-Un restaurante económico tendrá una etiqueta € y un restaurante no económico tendrá una
-etiqueta €€.
+
 Tendremos que añadir una nueva propiedad boolean que indica si es economico (true) o no
 lo es (false), la añadimos al modelo de Restaurant:
 economic: {
