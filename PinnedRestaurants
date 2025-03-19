@@ -1,0 +1,37 @@
+// RestaurantModel
+pinnedAt: {
+allowNull: true,
+type: DataTypes.DATE
+},
+
+// RestaurantMigration
+pinnedAt: {
+allowNull: true,
+type: Sequelize.DATE
+},
+
+// RestaurantRoutes
+app.route('/restaurants/:restaurantId/togglePinned')
+.patch(
+isLoggedIn, //Should return 401 if not logged in
+hasRole('owner'),//Should return 403 when logged in as a customer
+checkEntityExists(Restaurant, 'restaurantId'), // Should return
+403 when trying to pin a restaurant that is not yours
+RestaurantMiddleware.checkRestaurantOwnership,
+)
+
+// RestaurantMiddleware
+const togglePinned = async function (req, res) {
+try {
+const restaurant = await Restaurant.findByPk(req.params.restaurantId)
+await Restaurant.update(
+{ pinnedAt: restaurant.pinnedAt ? null : new Date() },
+{ where: { id: restaurant.id } }
+)
+const updatedRestaurant = await
+Restaurant.findByPk(req.params.restaurantId)
+res.json(updatedRestaurant)
+} catch (err) {
+res.status(500).send(err)
+}
+}
