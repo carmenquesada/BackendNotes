@@ -1,0 +1,88 @@
+RestaurantModel
+discount: {
+type: DataTypes.INTEGER,
+defaultValue: 0
+}
+
+ProductModel
+applicable: { type: DataTypes.BOOLEAN, defaultValue: false }
+
+CreateRestaurant
+discount: {
+type: Sequelize.INTEGER,
+defaultValue: 0
+},
+
+CreateProduct
+applicable: {
+type: Sequelize.BOOLEAN,
+allowNull: false,
+defaultValue: false
+}
+
+RestaurantValidation al update y al create
+check('discount').isInt({ min: 0, max: 100 }).toInt()
+
+RestaurantMiddleware
+const checkProductCanBePromoted = async (req, res, next) => {
+try {
+const product = await Product.findByPk(req.params.productId)
+const restaurant = await Restaurant.findByPk(product.restaurantId)
+if (restaurant.percentage > 0) {
+return next()
+} else {
+return res.status(409).send('This product cannnot be promoted')
+}
+} catch (err) {
+return res.status(500).send(err.message)
+
+
+RestaurantController
+const promote = async function (req, res) {
+try {
+const t = sequelizeSession.transaction()
+const productToBeUpdated = await
+Product.findByPk(req.params.productId)
+if (productToBeUpdated.applicable === true) {
+await Product.update({ applicable: false }, { where: { id:
+productToBeUpdated.id } }, { transaction: t })
+} else {
+await Product.update({ applicable: true }, { where: { id:
+productToBeUpdated.id } }, { transaction: t })
+}
+await t.commit()
+const updatedProduct = await Product.findByPk(req.params.productId)
+res.json(updatedProduct)
+} catch (err) {
+res.status(500).send(err)
+}
+}
+
+
+const indexRestaurant = async function (req, res) {
+try {
+const products = await Product.findAll({
+where: {
+restaurantId: req.params.restaurantId
+},
+include: [
+{
+model: ProductCategory,
+as: 'productCategory'
+}],
+// SOLUCION
+order: [['applicable', 'DESC']]
+})
+res.json(products)
+} catch (err) {
+res.status(500).send(err)
+}
+
+RestaurantRoute
+app.route('/products/:productId/promote')
+.patch(
+isLoggedIn,
+hasRole('owner'),
+checkEntityExists(Product, 'productId'),
+ProductMiddleware.checkProductCanBePromoted,
+ProductController.promote
